@@ -15,7 +15,9 @@ def create_db():
 
 @cli.command("seed_db")
 def seed_db():
+    print("Generating students...")
     for student in generate_students(10):
+        print(f"Adding student {student['firstName']} {student['lastName']}")
         db.session.add(Student(**student))
     db.session.commit()
 
