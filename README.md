@@ -18,6 +18,11 @@ Uses the default Flask development server.
    Test it out at [http://localhost:5000](http://localhost:5000). The "web" folder is mounted into the container and
    your code changes apply automatically.
 
+1. To populate databae use:
+    ```sh
+    $ docker-compose exec web python manage.py seed_db
+    ```
+    
 ### Production
 
 Uses gunicorn + nginx.
