@@ -3,6 +3,13 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+*.pyc
+__pycache
+.DS_Store
+.env.dev.sample
+.env.prod
+.env.prod.db
+
 # pycharm
 .idea/
 

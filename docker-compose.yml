@@ -1,25 +1,25 @@
-version: "3"
+version: '3.8'
+
 services:
-  postgres:
-    restart: always
-    image: postgres:latest
-    container_name: postgres
+  web:
+    build: ../services/web
+    command: python manage.py run -h 0.0.0.0
     volumes:
-      - ./postgres-data:/var/lib/postgresql/data
-    env_file:
-      - .env
+      - ./services/web/:/usr/src/app/
     ports:
-      - "5432:5432"
-  backend:
-#    restart: always
-    build: .
-    container_name: backend
-    volumes:
-      - .:/app
-    ports:
-      - "5000:5000"
+      - 5000:5000
     env_file:
-        - .env
+      - ./.env.dev
     depends_on:
-      - postgres
-    entrypoint: ["python", "main.py", "runserver"]
+      - db
+  db:
+    image: postgres:13-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=hello_flask
+      - POSTGRES_PASSWORD=hello_flask
+      - POSTGRES_DB=hello_flask_dev
+
+volumes:
+  postgres_data:
