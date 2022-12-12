@@ -1,0 +1,25 @@
+version: "3"
+services:
+  postgres:
+    restart: always
+    image: postgres:latest
+    container_name: postgres
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+    env_file:
+      - .env
+    ports:
+      - "5432:5432"
+  backend:
+#    restart: always
+    build: .
+    container_name: backend
+    volumes:
+      - .:/app
+    ports:
+      - "5000:5000"
+    env_file:
+        - .env
+    depends_on:
+      - postgres
+    entrypoint: ["python", "main.py", "runserver"]
