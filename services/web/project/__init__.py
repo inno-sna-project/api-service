@@ -51,8 +51,8 @@ def get_all_dropped_students():
 @app.post("/api/add_dropped_student")
 def add_dropped_student():
     data = request.get_json()
-    first_name = data.get("first_name")
-    last_name = data.get("last_name")
+    first_name = data.get("firstName")
+    last_name = data.get("lastName")
     email = data.get("email")
     dropped = True
     drop_reason = data.get("drop_reason")
