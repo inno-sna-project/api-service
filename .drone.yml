@@ -45,7 +45,8 @@ steps:
         - docker pull postgres:13-alpine
         - docker stop api-service-db
         - docker rm api-service-db
-        - docker run -d --name api-service-db -p 5432:5432 --env-file .env.prod.db -v postgres-data:/var/lib/postgresql postgres:13-alpine
+        - docker volume rm postgres-data &
+        - docker run -d --name api-service-db -p 5432:5432 --env-file .env.prod.db -v postgres-data:/var/lib/postgresql/data postgres:13-alpine
         - docker ps
       trigger:
         event:
