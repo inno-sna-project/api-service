@@ -37,6 +37,7 @@ steps:
       script:
         - cd /api_service
         - echo "POSTGRES_USER=hello_flask
+            POSTGRES_PASSWORD=$${POSTGRES_PASSWORD}
             POSTGRES_DB=hello_flask_prod" > .env.prod.db
         - cat .env.prod.db # debug
         - docker pull postgres:13-alpine
@@ -65,13 +66,15 @@ steps:
         - echo -e "FLASK_APP=project/__init__.py
             \nFLASK_DEBUG=0
             \nSQL_PORT=5432
+            \nDATABASE_URL=$${DATABASE_URL}
+            \nSQL_HOST=$${SQL_HOST}
             \nDATABASE=postgres
             \nAPP_FOLDER=/home/app/web" > .env.prod
         - cat .env.prod # debug
         - docker pull snaprojectuser/api-service-web
         - docker stop api-service-web
         - docker rm api-service-web
-        - docker run -d --name api-service-web -p 5000:5000 --env-file .env.prod -e DATABASE_URL -e SQL_HOST snaprojectuser/api-service-web:latest
+        - docker run -d --name api-service-web -p 5000:5000 --env-file .env.prod snaprojectuser/api-service-web:latest
         - docker ps
 services:
   - name: docker
