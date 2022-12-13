@@ -5,6 +5,7 @@ from flask import (
     jsonify,
     send_from_directory,
     request,
+    CORS,
 )
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.utils import secure_filename
@@ -12,6 +13,7 @@ from werkzeug.utils import secure_filename
 app = Flask(__name__)
 app.config.from_object("project.config.Config")
 db = SQLAlchemy(app)
+CORS(app)
 
 
 class Student(db.Model):
@@ -32,7 +34,14 @@ class Student(db.Model):
         self.drop_reason = drop_reason
 
 
-@app.get("/api/dropped_students")
+def corsify(resp):
+    resp.headers.add("Access-Control-Allow-Origin", "*")
+    resp.headers.add("Access-Control-Allow-Headers", "*")
+    resp.headers.add("Access-Control-Allow-Methods", "*")
+    return resp
+
+
+@app.route("/api/dropped_students", methods=["GET", "OPTIONS"])
 def get_all_dropped_students():
     students = Student.query.filter_by(dropped=True).all()
     response = []
@@ -45,10 +54,10 @@ def get_all_dropped_students():
                 "email": student.email,
             }
         )
-    return jsonify(response)
+    return corsify(jsonify(response))
 
 
-@app.post("/api/add_dropped_student")
+@app.route("/api/add_dropped_student", methods=["POST", "OPTIONS"])
 def add_dropped_student():
     data = request.get_json()
     first_name = data.get("firstName")

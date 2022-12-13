@@ -22,7 +22,7 @@ steps:
       - docker-compose -f docker-compose.prod.yml push
 
   # Recreate db every push
-  - name: deploy api service db
+  - name: deploy db (optional)
     image: appleboy/drone-ssh
     settings:
       host:
@@ -52,7 +52,21 @@ steps:
         event:
           - custom
 
-  - name: deploy api service web
+  # Populate db every push
+  - name: populate db (optional)
+    image: appleboy/drone-ssh
+    settings:
+      host:
+        - 45.137.190.96
+      username: root
+      port: 22
+      key:
+        from_secret: ssh_key
+      script:
+        - docker exec api-service-web python manage.py create_db
+        - docker exec api-service-web python manage.py seed_db
+
+  - name: deploy web
     image: appleboy/drone-ssh
     settings:
       host:
@@ -83,19 +97,6 @@ steps:
         - docker rm api-service-web
         - docker run -d --name api-service-web -p 5000:5000 --env-file .env.prod snaprojectuser/api-service-web:latest gunicorn --bind 0.0.0.0:5000 manage:app
         - docker ps
-
-  - name: populate db
-    image: appleboy/drone-ssh
-    settings:
-      host:
-        - 45.137.190.96
-      username: root
-      port: 22
-      key:
-        from_secret: ssh_key
-      script:
-        - docker exec api-service-web python manage.py create_db
-        - docker exec api-service-web python manage.py seed_db
 
 services:
   - name: docker
