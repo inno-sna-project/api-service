@@ -16,9 +16,9 @@ steps:
     commands:
       - sleep 20  # give docker enough time to start
       - echo $DOCKER_PASSWORD | docker login --username snaprojectuser --password-stdin
-      - docker-compose -f docker-compose.prod.yml -d pull
-      - docker-compose -f docker-compose.prod.yml -d build
-      - docker-compose -f docker-compose.prod.yml -d push
+      - docker-compose -f docker-compose.prod.yml pull
+      - docker-compose -f docker-compose.prod.yml build
+      - docker-compose -f docker-compose.prod.yml push
 
 #  - name: deploy
 #    image: appleboy/drone-ssh
