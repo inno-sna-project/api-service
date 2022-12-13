@@ -36,7 +36,7 @@ steps:
           from_secret: env_prod_db
       script:
         - cd /api_service
-        - echo $ENV_PROD_DB > .env.prod.db
+        - echo "$ENV_PROD_DB" > .env.prod.db
         - ls # debug
         - docker pull postgres:13-alpine
         - docker stop api-service-db
@@ -59,7 +59,7 @@ steps:
           from_secret: env_prod
       script:
         - cd /api_service
-        - echo $ENV_PROD > .env.prod
+        - echo "$ENV_PROD" > .env.prod
         - ls # debug
         - docker pull snaprojectuser/api-service-web
         - docker stop api-service-web
