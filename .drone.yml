@@ -54,7 +54,7 @@ steps:
         - docker ps
       trigger:
         event:
-          - custom
+          - push
 
   - name: deploy api service web
     image: appleboy/drone-ssh
@@ -87,6 +87,9 @@ steps:
         - docker rm api-service-web
         - docker run -d --name api-service-web -p 5000:5000 --env-file .env.prod snaprojectuser/api-service-web:latest gunicorn --bind 0.0.0.0:5000 manage:app
         - docker ps
+      trigger:
+        event:
+          - push
 
   - name: populate db
     image: appleboy/drone-ssh
@@ -100,6 +103,9 @@ steps:
       script:
         - docker exec api-service-web python manage.py create_db
         - docker exec api-service-web python manage.py seed_db
+      trigger:
+        event:
+          - push
 
 services:
   - name: docker
@@ -118,3 +124,4 @@ trigger:
     - main
   event:
     - push
+    - pull_request
