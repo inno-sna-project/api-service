@@ -43,6 +43,7 @@ def get_all_dropped_students():
                 "firstName": student.firstName,
                 "lastName": student.lastName,
                 "email": student.email,
+                "drop_reason": student.drop_reason,
             }
         )
     return jsonify(response)
