@@ -21,19 +21,6 @@ steps:
       - docker-compose -f docker-compose.prod.yml build --pull
       - docker-compose -f docker-compose.prod.yml push
 
-  - name: copy docker compose
-    image: appleboy/drone-scp
-    settings:
-      host:
-        - 45.137.190.96
-        - 45.137.190.92
-      username: root
-      port: 22
-      key:
-          from_secret: ssh_key
-      target: /api_service
-      source: docker-compose.prod.yml
-
   - name: deploy api service db
     image: appleboy/drone-ssh
     settings:
