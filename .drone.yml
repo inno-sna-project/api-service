@@ -1,0 +1,57 @@
+# with the help of https://jlelse.blog/dev/drone-dind
+kind: pipeline
+name: default
+type: docker
+
+steps:
+  - name: build
+    image: compose:1.23.2
+    volumes:
+      - name: dockersock
+        path: /var/run
+    environment:
+      DOCKER_PASSWORD:
+        from_secret: docker_password
+      DOCKER_BUILDKIT: 1
+    commands:
+      - sleep 20 # give docker enough time to start
+      - echo $DOCKER_PASSWORD | docker login --username snaprojectuser --password-stdin
+      - docker-compose -f docker-compose.prod.yml -d pull
+      - docker-compose -f docker-compose.prod.yml -d build
+      - docker-compose -f docker-compose.prod.yml -d push
+
+#  - name: deploy
+#    image: appleboy/drone-ssh
+#    settings:
+#      host:
+#        - 45.137.190.96
+#        - 45.137.190.92
+#      username: root
+#      port: 22
+#      key:
+#        from_secret: ssh_key
+#      script:
+#        - docker pull snaprojectuser/front:latest
+#        - docker stop front
+#        - docker rm front
+#        - docker run -d --name front -p 80:3070 snaprojectuser/front:latest
+#        - docker ps
+
+
+services:
+  - name: docker
+    image: docker:dind
+    privileged: true
+    volumes:
+      - name: dockersock
+        path: /var/run
+
+volumes:
+  - name: dockersock
+    temp: {}
+
+trigger:
+  branch:
+    - master
+  event:
+    - push
