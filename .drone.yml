@@ -62,11 +62,11 @@ steps:
           from_secret: sql_host
       script:
         - cd /api_service
-        - echo "FLASK_APP=project/__init__.py
-            FLASK_DEBUG=0
-            SQL_PORT=5432
-            DATABASE=postgres
-            APP_FOLDER=/home/app/web" > .env.prod
+        - echo -e "FLASK_APP=project/__init__.py
+            \nFLASK_DEBUG=0
+            \nSQL_PORT=5432
+            \nDATABASE=postgres
+            \nAPP_FOLDER=/home/app/web" > .env.prod
         - cat .env.prod # debug
         - docker pull snaprojectuser/api-service-web
         - docker stop api-service-web
