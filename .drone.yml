@@ -34,8 +34,29 @@ steps:
       target: /api_service
       source: docker-compose.prod.yml
 
+  - name: deploy api service db
+    image: appleboy/drone-ssh
+    settings:
+      host:
+        - 45.137.190.96  # deploy db only to one server
+        # - 45.137.190.92
+      username: root
+      port: 22
+      key:
+        from_secret: ssh_key
+      environment:
+        ENV_PROD_DB:
+          from_secret: env_prod_db
+      script:
+        - cd /api_service
+        - echo $ENV_PROD_DB > .env.prod.db
+        - docker pull postgres:13-alpine
+        - docker stop api-service-db
+        - docker rm api-service-db
+        - docker run -d --name api-service-db -p 5432:5432 --env-file .env.prod.db postgres:13-alpine
+        - docker ps
 
-  - name: deploy
+  - name: deploy api service web
     image: appleboy/drone-ssh
     settings:
       host:
@@ -45,12 +66,17 @@ steps:
       port: 22
       key:
         from_secret: ssh_key
+      environment:
+        ENV_PROD:
+          from_secret: env_prod
       script:
         - cd /api_service
-        - docker compose -f docker-compose.prod.yml pull
-        - docker compose -f docker-compose.prod.yml up -d --force-recreate
-
-
+        - echo $ENV_PROD > .env.prod
+        - docker pull snaprojectuser/api-service-web
+        - docker stop api-service-web
+        - docker rm api-service-web
+        - docker run -d --name api-service-web -p 5000:5000 --env-file .env.prod snaprojectuser/api-service-web:latest
+        - docker ps
 services:
   - name: docker
     image: docker:dind
