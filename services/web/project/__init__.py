@@ -5,6 +5,7 @@ from flask import (
     jsonify,
     send_from_directory,
     request,
+    make_response
 )
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
@@ -35,10 +36,18 @@ class Student(db.Model):
 
 
 def corsify(resp):
-    resp.headers.add("Access-Control-Allow-Origin", "*")
-    resp.headers.add("Access-Control-Allow-Headers", "*")
-    resp.headers.add("Access-Control-Allow-Methods", "*")
+    resp.headers["Access-Control-Allow-Origin"] = "*"
+    resp.headers["Access-Control-Allow-Headers"] = "*"
+    resp.headers["Access-Control-Allow-Methods"] = "*"
     return resp
+
+
+def _build_cors_preflight_response():
+    response = make_response()
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers.add('Access-Control-Allow-Headers', "*")
+    response.headers.add('Access-Control-Allow-Methods', "*")
+    return response
 
 
 @app.route("/api/dropped_students", methods=["GET", "OPTIONS"])
@@ -60,6 +69,8 @@ def get_all_dropped_students():
 
 @app.route("/api/add_dropped_student", methods=["POST", "OPTIONS"])
 def add_dropped_student():
+    if request.method == "OPTIONS":  # CORS preflight
+        return _build_cors_preflight_response()
     data = request.get_json()
     first_name = data.get("firstName")
     last_name = data.get("lastName")
