@@ -14,8 +14,10 @@ steps:
         from_secret: docker_password
       DOCKER_BUILDKIT: 1
     commands:
-      - sleep 20  # give docker enough time to start
+      - sleep 15  # give docker enough time to start
       - echo $DOCKER_PASSWORD | docker login --username snaprojectuser --password-stdin
+      - cp .env.prod-sample .env.prod
+      - cp .env.prod.db-sample .env.prod.db
       - docker-compose -f docker-compose.prod.yml pull
       - docker-compose -f docker-compose.prod.yml build
       - docker-compose -f docker-compose.prod.yml push
