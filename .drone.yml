@@ -20,6 +20,10 @@ steps:
       - cp .env.prod.db-sample .env.prod.db
       - docker-compose -f docker-compose.prod.yml build --pull
       - docker-compose -f docker-compose.prod.yml push
+    when:
+      event:
+        - pull_request
+        - push
 
   # Recreate db every push
   - name: deploy api service db
@@ -96,31 +100,6 @@ steps:
       script:
         - docker exec api-service-web python manage.py create_db
         - docker exec api-service-web python manage.py seed_db
-  when: 
-    event:
-      - push
-
-steps:
-  - name: build
-    image: docker/compose:1.29.2
-    volumes:
-      - name: dockersock
-        path: /var/run
-    environment:
-      DOCKER_PASSWORD:
-        from_secret: docker_password
-      DOCKER_BUILDKIT: 1
-    commands:
-      - sleep 15  # give docker enough time to start
-      - echo $DOCKER_PASSWORD | docker login --username snaprojectuser --password-stdin
-      - cp .env.prod-sample .env.prod
-      - cp .env.prod.db-sample .env.prod.db
-      - docker-compose -f docker-compose.prod.yml build --pull
-      - docker-compose -f docker-compose.prod.yml push
-  when: 
-    event:
-      - pull_request
-
 
 services:
   - name: docker
@@ -139,4 +118,3 @@ trigger:
     - main
   event:
     - push
-    - pull_request
