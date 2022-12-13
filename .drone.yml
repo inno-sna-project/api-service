@@ -42,7 +42,10 @@ steps:
         - docker pull postgres:13-alpine
         - docker stop api-service-db
         - docker rm api-service-db
-        - docker run -d --name api-service-db -p 5432:5432 --env-file .env.prod.db postgres:13-alpine
+        - docker run -d --name api-service-db -p 5432:5432 \ 
+            --env-file .env.prod.db \ 
+            -e POSTGRES_PASSWORD \
+            postgres:13-alpine
         - docker ps
 
   - name: deploy api service web
