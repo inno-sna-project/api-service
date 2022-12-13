@@ -18,26 +18,37 @@ steps:
       - echo $DOCKER_PASSWORD | docker login --username snaprojectuser --password-stdin
       - cp .env.prod-sample .env.prod
       - cp .env.prod.db-sample .env.prod.db
-      - docker-compose -f docker-compose.prod.yml pull
-      - docker-compose -f docker-compose.prod.yml build
+      - docker-compose -f docker-compose.prod.yml build --pull
       - docker-compose -f docker-compose.prod.yml push
 
-#  - name: deploy
-#    image: appleboy/drone-ssh
-#    settings:
-#      host:
-#        - 45.137.190.96
-#        - 45.137.190.92
-#      username: root
-#      port: 22
-#      key:
-#        from_secret: ssh_key
-#      script:
-#        - docker pull snaprojectuser/front:latest
-#        - docker stop front
-#        - docker rm front
-#        - docker run -d --name front -p 80:3070 snaprojectuser/front:latest
-#        - docker ps
+  - name: copy docker compose
+    image: appleboy/drone-scp
+    settings:
+      host:
+        - 45.137.190.96
+        - 45.137.190.92
+      username: root
+      port: 22
+      key:
+          from_secret: ssh_key
+      target: /api_service
+      source: docker-compose.prod.yml
+
+
+  - name: deploy
+    image: appleboy/drone-ssh
+    settings:
+      host:
+        - 45.137.190.96
+        - 45.137.190.92
+      username: root
+      port: 22
+      key:
+        from_secret: ssh_key
+      script:
+        - cd /api_service
+        - docker-compose -f docker-compose.prod.yml pull
+        - docker-compose -f docker-compose.prod.yml up -d --force-recreate
 
 
 services:
