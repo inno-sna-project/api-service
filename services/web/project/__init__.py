@@ -69,5 +69,5 @@ def add_dropped_student():
     student = Student(first_name, last_name, email, dropped, drop_reason)
     db.session.add(student)
     db.session.commit()
-    resp = {"id": student.id, "message": "Student has been successfully added to dropped students list."}
-    return corsify(jsonify(resp)), 201
+    resp = {"id": student.id, "message": "Student has been successfully added to dropped students list."}, 201
+    return corsify(jsonify(resp))
