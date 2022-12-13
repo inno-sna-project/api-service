@@ -5,8 +5,8 @@ from flask import (
     jsonify,
     send_from_directory,
     request,
-    CORS,
 )
+from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.utils import secure_filename
 
