@@ -32,12 +32,13 @@ steps:
       key:
         from_secret: ssh_key
       environment:
-        ENV_PROD_DB:
-          from_secret: env_prod_db
+        POSTGRES_PASSWORD:
+          from_secret: postgres_password
       script:
         - cd /api_service
-        - echo "$ENV_PROD_DB" > .env.prod.db
-        - ls # debug
+        - echo "POSTGRES_USER=hello_flask
+            POSTGRES_DB=hello_flask_prod" > .env.prod.db
+        - cat .env.prod.db # debug
         - docker pull postgres:13-alpine
         - docker stop api-service-db
         - docker rm api-service-db
@@ -55,16 +56,25 @@ steps:
       key:
         from_secret: ssh_key
       environment:
-        ENV_PROD:
-          from_secret: env_prod
+        DATABASE_URL:
+          from_secret: database_url
+        SQL_HOST:
+          from_secret: sql_host
       script:
         - cd /api_service
-        - echo "$ENV_PROD" > .env.prod
-        - ls # debug
+        - echo "FLASK_APP=project/__init__.py
+            FLASK_DEBUG=0
+            SQL_PORT=5432
+            DATABASE=postgres
+            APP_FOLDER=/home/app/web" > .env.prod
+        - cat .env.prod # debug
         - docker pull snaprojectuser/api-service-web
         - docker stop api-service-web
         - docker rm api-service-web
-        - docker run -d --name api-service-web -p 5000:5000 --env-file .env.prod snaprojectuser/api-service-web:latest
+        - docker run -d --name api-service-web \ 
+          -p 5000:5000 --env-file .env.prod \
+          -e DATABASE_URL -e SQL_HOST \
+          snaprojectuser/api-service-web:latest
         - docker ps
 services:
   - name: docker
