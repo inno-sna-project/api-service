@@ -20,8 +20,8 @@ def random_last_name():
 def generate_students(num_students):
     students = []
     drop_reasons = ["Human Instrumentality Project", "Third Impact", "Frozen to death sleeping in university dorms", 
-    "Poisoned by Shinji Ikari", "Exploded after following Gendo Ikari into the LCL", "Died of a broken heart after Asuka Langley Soryu died", 
-    "Reached the form of god and ascended to heaven", "Turned himself into a Gigachad by watching too much anime", "Best Genchin Impact player"]
+        "Poisoned by Shinji Ikari", "Exploded after following Gendo Ikari into the LCL", "Died of a broken heart after Asuka Langley Soryu died", 
+        "Reached the form of god and ascended to heaven", "Turned himself into a Gigachad by watching too much anime", "Best Genchin Impact player"]
     for _ in range(num_students):
         dropped = random.random() < 0.4
         student = {
