@@ -20,7 +20,7 @@ def random_last_name():
 def generate_students(num_students):
     students = []
     for _ in range(num_students):
-        dropped = random.random() < 0.1
+        dropped = random.random() < 0.4
         student = {
             "firstName": random_first_name(),
             "lastName": random_last_name(),
