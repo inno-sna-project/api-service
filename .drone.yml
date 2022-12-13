@@ -36,10 +36,11 @@ steps:
           from_secret: postgres_password
       script:
         - cd /api_service
-        - echo "POSTGRES_USER=hello_flask
-            POSTGRES_PASSWORD=$${POSTGRES_PASSWORD}
-            POSTGRES_DB=hello_flask_prod" > .env.prod.db
-        - cat .env.prod.db # debug
+        # Just handle env on server side by modifying /api_service/.env.prod.db
+#        - echo -e "POSTGRES_USER=hello_flask
+#            \nPOSTGRES_PASSWORD=$POSTGRES_PASSWORD
+#            \nPOSTGRES_DB=hello_flask_prod" > .env.prod.db
+#        - cat .env.prod.db # debug
         - docker pull postgres:13-alpine
         - docker stop api-service-db
         - docker rm api-service-db
@@ -63,14 +64,15 @@ steps:
           from_secret: sql_host
       script:
         - cd /api_service
-        - echo -e "FLASK_APP=project/__init__.py
-            \nFLASK_DEBUG=0
-            \nSQL_PORT=5432
-            \nDATABASE_URL=$${DATABASE_URL}
-            \nSQL_HOST=$${SQL_HOST}
-            \nDATABASE=postgres
-            \nAPP_FOLDER=/home/app/web" > .env.prod
-        - cat .env.prod # debug
+        # Just handle env on server side by modifying /api_service/.env.prod
+#        - echo -e "FLASK_APP=project/__init__.py
+#            \nFLASK_DEBUG=0
+#            \nSQL_PORT=5432
+#            \nDATABASE_URL=$DATABASE_URL
+#            \nSQL_HOST=$SQL_HOST
+#            \nDATABASE=postgres
+#            \nAPP_FOLDER=/home/app/web" > .env.prod
+#        - cat .env.prod # debug
         - docker pull snaprojectuser/api-service-web
         - docker stop api-service-web
         - docker rm api-service-web
