@@ -56,8 +56,8 @@ def add_dropped_student():
     last_name = data.get("lastName")
     email = data.get("email")
     dropped = True
-    drop_reason = data.get("drop_reason")
-    student = Student(first_name, last_name, email, dropped, drop_reason)
+    # drop_reason = data.get("drop_reason")
+    student = Student(first_name, last_name, email, dropped, "")
     db.session.add(student)
     db.session.commit()
     return jsonify({"id": student.id, "message": "Student has been successfully added to dropped students list."}), 201
