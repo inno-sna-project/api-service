@@ -5,13 +5,16 @@ from flask import (
     jsonify,
     send_from_directory,
     request,
+    make_response
 )
+from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.config.from_object("project.config.Config")
 db = SQLAlchemy(app)
+CORS(app)
 
 
 class Student(db.Model):
@@ -32,7 +35,22 @@ class Student(db.Model):
         self.drop_reason = drop_reason
 
 
-@app.get("/api/dropped_students")
+def corsify(resp):
+    resp.headers["Access-Control-Allow-Origin"] = "*"
+    resp.headers["Access-Control-Allow-Headers"] = "*"
+    resp.headers["Access-Control-Allow-Methods"] = "*"
+    return resp
+
+
+def _build_cors_preflight_response():
+    response = make_response()
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers.add('Access-Control-Allow-Headers', "*")
+    response.headers.add('Access-Control-Allow-Methods', "*")
+    return response
+
+
+@app.route("/api/dropped_students", methods=["GET", "OPTIONS"])
 def get_all_dropped_students():
     students = Student.query.filter_by(dropped=True).all()
     response = []
@@ -46,11 +64,13 @@ def get_all_dropped_students():
                 "drop_reason": student.drop_reason,
             }
         )
-    return jsonify(response)
+    return corsify(jsonify(response))
 
 
-@app.post("/api/add_dropped_student")
+@app.route("/api/add_dropped_student", methods=["POST", "OPTIONS"])
 def add_dropped_student():
+    if request.method == "OPTIONS":  # CORS preflight
+        return _build_cors_preflight_response()
     data = request.get_json()
     first_name = data.get("firstName")
     last_name = data.get("lastName")
@@ -60,4 +80,5 @@ def add_dropped_student():
     student = Student(first_name, last_name, email, dropped, "")
     db.session.add(student)
     db.session.commit()
-    return jsonify({"id": student.id, "message": "Student has been successfully added to dropped students list."}), 201
+    resp = {"id": student.id, "message": "Student has been successfully added to dropped students list."}, 201
+    return corsify(jsonify(resp))

@@ -26,7 +26,7 @@ steps:
         - push
 
   # Recreate db every push
-  - name: deploy api service db
+  - name: deploy db (optional)
     image: appleboy/drone-ssh
     settings:
       host:
@@ -49,14 +49,15 @@ steps:
         - docker pull postgres:13-alpine
         - docker stop api-service-db
         - docker rm api-service-db
-        - docker volume rm postgres-data &
+        - sleep 2
+        - docker volume rm postgres-data
         - docker run -d --name api-service-db -p 5432:5432 --env-file .env.prod.db -v postgres-data:/var/lib/postgresql/data postgres:13-alpine
         - docker ps
       trigger:
         event:
           - push
 
-  - name: deploy api service web
+  - name: deploy web
     image: appleboy/drone-ssh
     settings:
       host:
@@ -91,7 +92,8 @@ steps:
         event:
           - push
 
-  - name: populate db
+  # Populate db every push
+  - name: populate db (optional)
     image: appleboy/drone-ssh
     settings:
       host:
@@ -124,4 +126,3 @@ trigger:
     - main
   event:
     - push
-    - pull_request
